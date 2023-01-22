@@ -425,21 +425,10 @@ Completable: Cpath Value[op]->e
 Complete src/Completion.res 44:7
 posCursor:[44:7] posNoWhite:[44:6] Found expr:[44:3->54:3]
 Pexp_apply ...[50:9->50:10] (...[44:3->50:8], ...[51:2->54:3])
-posCursor:[44:7] posNoWhite:[44:6] Found expr:[44:3->50:8]
-Completable: Cpath Value[fa]->
-[{
-    "label": "ForAuto.abc",
-    "kind": 12,
-    "tags": [],
-    "detail": "(t, int) => t",
-    "documentation": null
-  }, {
-    "label": "ForAuto.abd",
-    "kind": 12,
-    "tags": [],
-    "detail": "(t, int) => t",
-    "documentation": null
-  }]
+posCursor:[44:7] posNoWhite:[44:6] Found expr:[44:5->44:7]
+Pexp_ident |.:[44:5->44:7]
+Completable: Cpath Value[|.]
+[]
 
 Complete src/Completion.res 47:21
 posCursor:[47:21] posNoWhite:[47:20] Found expr:[47:3->47:21]
@@ -942,8 +931,6 @@ Resolved opens 2 Completion.res Completion.res
 Complete src/Completion.res 234:34
 posCursor:[234:34] posNoWhite:[234:33] Found expr:[234:18->234:36]
 Pexp_apply ...__ghost__[0:-1->0:-1] (...[234:18->234:34], ...[234:34->234:35])
-posCursor:[234:34] posNoWhite:[234:33] Found expr:[234:18->234:34]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[234:18->234:30], ...[234:32->234:34])
 posCursor:[234:34] posNoWhite:[234:33] Found expr:[234:32->234:34]
 Pexp_ident na:[234:32->234:34]
 Completable: Cpath Value[na]
@@ -1497,8 +1484,6 @@ Resolved opens 2 Completion.res Completion.res
 Complete src/Completion.res 378:24
 posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:12->378:26]
 Pexp_apply ...__ghost__[0:-1->0:-1] (...[378:12->378:24], ...[378:24->378:25])
-posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:12->378:24]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[378:12->378:14], ...[378:16->378:24])
 posCursor:[378:24] posNoWhite:[378:23] Found expr:[378:16->378:24]
 Pexp_ident ForAuto.:[378:16->378:24]
 Completable: Cpath Value[ForAuto, ""]
@@ -1521,8 +1506,6 @@ Resolved opens 2 Completion.res Completion.res
 Complete src/Completion.res 381:38
 posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:12->381:41]
 Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:39], ...[381:39->381:40])
-posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:12->381:39]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[381:12->381:17], ...[381:19->381:39])
 posCursor:[381:38] posNoWhite:[381:37] Found expr:[381:19->381:39]
 Pexp_send [381:38->381:38] e:[381:19->381:36]
 Completable: Cpath Value[FAO, forAutoObject][""]
@@ -1545,8 +1528,6 @@ Resolved opens 2 Completion.res Completion.res
 Complete src/Completion.res 384:24
 posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:11->384:26]
 Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:11->384:24], ...[384:24->384:25])
-posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:11->384:24]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[384:11->384:12], ...[384:14->384:24])
 posCursor:[384:24] posNoWhite:[384:23] Found expr:[384:14->384:24]
 Pexp_field [384:14->384:23] _:[384:24->384:24]
 Completable: Cpath Value[funRecord].""
@@ -1591,8 +1572,6 @@ Resolved opens 3 Completion.res Completion.res js.ml
 Complete src/Completion.res 397:14
 posCursor:[397:14] posNoWhite:[397:13] Found expr:[396:14->397:20]
 Pexp_apply ...__ghost__[0:-1->0:-1] (...[396:14->397:16], ...[397:16->397:19])
-posCursor:[397:14] posNoWhite:[397:13] Found expr:[396:14->397:16]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[396:14->397:11], ...[397:13->397:16])
 posCursor:[397:14] posNoWhite:[397:13] Found expr:[397:13->397:16]
 Pexp_ident red:[397:13->397:16]
 Completable: Cpath Value[red]
@@ -1609,8 +1588,6 @@ Resolved opens 2 Completion.res Completion.res
 Complete src/Completion.res 402:25
 posCursor:[402:25] posNoWhite:[402:24] Found expr:[400:14->402:31]
 Pexp_apply ...__ghost__[0:-1->0:-1] (...[400:14->402:27], ...[402:27->402:30])
-posCursor:[402:25] posNoWhite:[402:24] Found expr:[400:14->402:27]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[400:14->402:22], ...[402:24->402:27])
 posCursor:[402:25] posNoWhite:[402:24] Found expr:[402:24->402:27]
 Pexp_ident red:[402:24->402:27]
 Completable: Cpath Value[red]
@@ -1627,8 +1604,6 @@ Resolved opens 2 Completion.res Completion.res
 Complete src/Completion.res 405:22
 posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:11->428:0]
 Pexp_apply ...__ghost__[0:-1->0:-1] (...[405:11->423:17], ...[428:0->428:0])
-posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:11->423:17]
-Pexp_apply ...__ghost__[0:-1->0:-1] (...[405:11->405:19], ...[405:21->423:17])
 posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:21->423:17]
 posCursor:[405:22] posNoWhite:[405:21] Found expr:[405:21->405:22]
 Pexp_ident r:[405:21->405:22]

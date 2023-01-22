@@ -326,74 +326,6 @@ type completionType =
   | ResolvedType of Type.t
   | ExtractedType of extractedType
 
-module Completion = struct
-  type kind =
-    | Module of Module.t
-    | Value of Types.type_expr
-    | ObjLabel of Types.type_expr
-    | Label of string
-    | Type of Type.t
-    | Constructor of Constructor.t * string
-    | PolyvariantConstructor of polyVariantConstructor * string
-    | Field of field * string
-    | FileModule of string
-    | Snippet of string
-    | ExtractedType of extractedType
-
-  type t = {
-    name: string;
-    sortText: string option;
-    insertText: string option;
-    filterText: string option;
-    insertTextFormat: Protocol.insertTextFormat option;
-    env: QueryEnv.t;
-    deprecated: string option;
-    docstring: string list;
-    kind: kind;
-  }
-
-  let create ~kind ~env ?(docstring = []) ?filterText name =
-    {
-      name;
-      env;
-      deprecated = None;
-      docstring;
-      kind;
-      sortText = None;
-      insertText = None;
-      insertTextFormat = None;
-      filterText;
-    }
-
-  let createWithSnippet ~name ?insertText ~kind ~env ?sortText ?filterText
-      ?(docstring = []) () =
-    {
-      name;
-      env;
-      deprecated = None;
-      docstring;
-      kind;
-      sortText;
-      insertText;
-      insertTextFormat = Some Protocol.Snippet;
-      filterText;
-    }
-
-  (* https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion *)
-  (* https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#completionItemKind *)
-  let kindToInt kind =
-    match kind with
-    | Module _ -> 9
-    | FileModule _ -> 9
-    | Constructor (_, _) | PolyvariantConstructor (_, _) -> 4
-    | ObjLabel _ -> 4
-    | Label _ -> 4
-    | Field (_, _) -> 5
-    | Type _ | ExtractedType _ -> 22
-    | Value _ -> 12
-    | Snippet _ -> 15
-end
-
 module Env = struct
   type t = {stamps: Stamps.t; modulePath: ModulePath.t}
   let addExportedModule ~name ~isType env =
@@ -586,11 +518,17 @@ module Completable = struct
     | Labelled of string
     | Optional of string
 
+  let argumentLabelToString = function
+    | Unlabelled {argumentPosition} -> "$" ^ string_of_int argumentPosition
+    | Labelled name -> "~" ^ name
+    | Optional name -> "~" ^ name ^ "=?"
+
   type contextPath =
     | CPString
     | CPArray
     | CPInt
     | CPFloat
+    | CPBool
     | CPApply of contextPath * Asttypes.arg_label list
     | CPId of string list * completionContext
     | CPField of contextPath * string
@@ -653,54 +591,52 @@ module Completable = struct
       }
     | CexhaustiveSwitch of {contextPath: contextPath; exprLoc: Location.t}
 
-  let toString =
-    let completionContextToString = function
-      | Value -> "Value"
-      | Type -> "Type"
-      | Module -> "Module"
-      | Field -> "Field"
-    in
-    let rec contextPathToString = function
-      | CPString -> "string"
-      | CPInt -> "int"
-      | CPFloat -> "float"
-      | CPApply (cp, labels) ->
-        contextPathToString cp ^ "("
-        ^ (labels
-          |> List.map (function
-               | Asttypes.Nolabel -> "Nolabel"
-               | Labelled s -> "~" ^ s
-               | Optional s -> "?" ^ s)
-          |> String.concat ", ")
-        ^ ")"
-      | CPArray -> "array"
-      | CPId (sl, completionContext) ->
-        completionContextToString completionContext ^ list sl
-      | CPField (cp, s) -> contextPathToString cp ^ "." ^ str s
-      | CPObj (cp, s) -> contextPathToString cp ^ "[\"" ^ s ^ "\"]"
-      | CPPipe {contextPath; id; inJsx} ->
-        contextPathToString contextPath
-        ^ "->" ^ id
-        ^ if inJsx then " <<jsx>>" else ""
-      | CTuple ctxPaths ->
-        "CTuple("
-        ^ (ctxPaths |> List.map contextPathToString |> String.concat ", ")
-        ^ ")"
-      | CArgument {functionContextPath; argumentLabel} ->
-        "CArgument "
-        ^ contextPathToString functionContextPath
-        ^ "("
-        ^ (match argumentLabel with
-          | Unlabelled {argumentPosition} ->
-            "$" ^ string_of_int argumentPosition
-          | Labelled name -> "~" ^ name
-          | Optional name -> "~" ^ name ^ "=?")
-        ^ ")"
-      | CJsxPropValue {pathToComponent; propName} ->
-        "CJsxPropValue " ^ (pathToComponent |> list) ^ " " ^ propName
-    in
+  let completionContextToString = function
+    | Value -> "Value"
+    | Type -> "Type"
+    | Module -> "Module"
+    | Field -> "Field"
 
-    function
+  let rec contextPathToString = function
+    | CPString -> "string"
+    | CPInt -> "int"
+    | CPFloat -> "float"
+    | CPBool -> "bool"
+    | CPApply (cp, labels) ->
+      contextPathToString cp ^ "("
+      ^ (labels
+        |> List.map (function
+             | Asttypes.Nolabel -> "Nolabel"
+             | Labelled s -> "~" ^ s
+             | Optional s -> "?" ^ s)
+        |> String.concat ", ")
+      ^ ")"
+    | CPArray -> "array"
+    | CPId (sl, completionContext) ->
+      completionContextToString completionContext ^ list sl
+    | CPField (cp, s) -> contextPathToString cp ^ "." ^ str s
+    | CPObj (cp, s) -> contextPathToString cp ^ "[\"" ^ s ^ "\"]"
+    | CPPipe {contextPath; id; inJsx} ->
+      contextPathToString contextPath
+      ^ "->" ^ id
+      ^ if inJsx then " <<jsx>>" else ""
+    | CTuple ctxPaths ->
+      "CTuple("
+      ^ (ctxPaths |> List.map contextPathToString |> String.concat ", ")
+      ^ ")"
+    | CArgument {functionContextPath; argumentLabel} ->
+      "CArgument "
+      ^ contextPathToString functionContextPath
+      ^ "("
+      ^ (match argumentLabel with
+        | Unlabelled {argumentPosition} -> "$" ^ string_of_int argumentPosition
+        | Labelled name -> "~" ^ name
+        | Optional name -> "~" ^ name ^ "=?")
+      ^ ")"
+    | CJsxPropValue {pathToComponent; propName} ->
+      "CJsxPropValue " ^ (pathToComponent |> list) ^ " " ^ propName
+
+  let toString = function
     | Cpath cp -> "Cpath " ^ contextPathToString cp
     | Cdecorator s -> "Cdecorator(" ^ str s ^ ")"
     | CnamedArg (cp, s, sl2) ->
@@ -736,6 +672,75 @@ module Completable = struct
           |> String.concat ", "))
     | CexhaustiveSwitch {contextPath} ->
       "CexhaustiveSwitch " ^ contextPathToString contextPath
+end
+
+module Completion = struct
+  type kind =
+    | Module of Module.t
+    | Value of Types.type_expr
+    | ObjLabel of Types.type_expr
+    | Label of string
+    | Type of Type.t
+    | Constructor of Constructor.t * string
+    | PolyvariantConstructor of polyVariantConstructor * string
+    | Field of field * string
+    | FileModule of string
+    | Snippet of string
+    | ExtractedType of extractedType
+    | ContextPath of Completable.contextPath
+
+  type t = {
+    name: string;
+    sortText: string option;
+    insertText: string option;
+    filterText: string option;
+    insertTextFormat: Protocol.insertTextFormat option;
+    env: QueryEnv.t;
+    deprecated: string option;
+    docstring: string list;
+    kind: kind;
+  }
+
+  let create ~kind ~env ?(docstring = []) ?filterText name =
+    {
+      name;
+      env;
+      deprecated = None;
+      docstring;
+      kind;
+      sortText = None;
+      insertText = None;
+      insertTextFormat = None;
+      filterText;
+    }
+
+  let createWithSnippet ~name ?insertText ~kind ~env ?sortText ?filterText
+      ?(docstring = []) () =
+    {
+      name;
+      env;
+      deprecated = None;
+      docstring;
+      kind;
+      sortText;
+      insertText;
+      insertTextFormat = Some Protocol.Snippet;
+      filterText;
+    }
+
+  (* https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion *)
+  (* https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#completionItemKind *)
+  let kindToInt kind =
+    match kind with
+    | Module _ -> 9
+    | FileModule _ -> 9
+    | Constructor (_, _) | PolyvariantConstructor (_, _) -> 4
+    | ObjLabel _ -> 4
+    | Label _ -> 4
+    | Field (_, _) -> 5
+    | Type _ | ExtractedType _ | ContextPath _ -> 22
+    | Value _ -> 12
+    | Snippet _ -> 15
 end
 
 module CursorPosition = struct

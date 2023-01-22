@@ -269,8 +269,6 @@ extracted params:
 Signature help src/SignatureHelp.res 71:29
 posCursor:[71:28] posNoWhite:[71:27] Found expr:[71:11->71:33]
 Pexp_apply ...[71:11->71:13] (...[71:16->71:30])
-posCursor:[71:28] posNoWhite:[71:27] Found expr:[71:16->71:30]
-Pexp_apply ...[71:16->71:28] (...[71:29->71:30])
 posCursor:[71:28] posNoWhite:[71:27] Found expr:[71:16->71:28]
 Pexp_ident iAmSoSpecial:[71:16->71:28]
 argAtCursor: unlabelled<0>
@@ -288,8 +286,6 @@ extracted params:
 Signature help src/SignatureHelp.res 74:40
 posCursor:[74:39] posNoWhite:[74:38] Found expr:[74:11->74:47]
 Pexp_apply ...[74:11->74:13] (...[74:16->74:44])
-posCursor:[74:39] posNoWhite:[74:38] Found expr:[74:16->74:44]
-Pexp_apply ...[74:16->74:28] (...[74:31->74:41])
 posCursor:[74:39] posNoWhite:[74:38] Found expr:[74:31->74:41]
 Pexp_apply ...[74:31->74:39] (...[74:40->74:41])
 posCursor:[74:39] posNoWhite:[74:38] Found expr:[74:31->74:39]
