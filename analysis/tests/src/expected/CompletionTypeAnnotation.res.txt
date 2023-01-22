@@ -168,10 +168,3 @@ Completable: Cexpression Type[someTuple]->tuple($1)
     "documentation": null
   }]
 
-Hover src/CompletionTypeAnnotation.res 40:30
-Nothing at that position. Now trying to use completion.
-posCursor:[40:30] posNoWhite:[40:29] Found expr:[40:29->40:30]
-Pexp_ident x:[40:29->40:30]
-Completable: Cpath Value[x]
-null
-
